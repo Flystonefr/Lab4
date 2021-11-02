@@ -1,0 +1,142 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
+
+namespace matrics_for_bigram
+{
+    public partial class Form1 : Form
+    {
+        Dictionary<string, double> voca = new Dictionary<string, double>();
+        public Form1()
+        {
+            InitializeComponent();
+            string data = File.ReadAllText(@"bigramDictionary.txt");
+        
+            string[] words = data.Split(' ');
+            string[] keys = new string[words.Length/2];
+            double[] value = new double[words.Length / 2];
+            int j = 0;
+            for( int i = 0; i<words.Length-1; i=i+2)
+            {
+                keys[j] = words[i];
+                value[j] = Convert.ToDouble(words[i + 1]);
+                j++;
+            }
+
+            for (int i = 0; i < keys.Length; i++) 
+            voca.Add(keys[i], value[i]);
+        }
+
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ArrayList x = new ArrayList();
+            ArrayList y = new ArrayList();
+            foreach (KeyValuePair<string, double> keyValue in voca)
+            {
+                if (!x.Contains(keyValue.Key[0]))
+                {
+                    x.Add(keyValue.Key[0]);
+                }
+                if (!y.Contains(keyValue.Key[1]))
+                {
+                    y.Add(keyValue.Key[1]);
+                }
+
+            }
+            dataGridView1.Size = new Size(1200, 1200);
+            dataGridView1.RowCount = x.Count;
+            dataGridView1.ColumnCount = y.Count;
+            dataGridView1.RowHeadersWidth = 50;
+            int i, j;
+            for (i = 0; i < x.Count; ++i)
+            {
+                for (j = 0; j < y.Count; ++j)
+                {
+                    dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.LightGray;
+                    foreach (KeyValuePair<string, double> keyValue in voca)
+                    {
+                        if (keyValue.Key == String.Concat(x[i], y[j]))
+                        {
+                            if (keyValue.Value > 0.01)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.Black;
+                            }
+                            else
+                            if (keyValue.Value <= 0.01 && keyValue.Value > 0.008)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.Red;
+                            }
+                            else
+                            if (keyValue.Value <= 0.008 && keyValue.Value > 0.007)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.Blue;
+                            }
+                            else
+                            if (keyValue.Value <= 0.007 && keyValue.Value > 0.0065)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.Yellow;
+                            }
+                            else
+                            if (keyValue.Value <= 0.0065 && keyValue.Value > 0.0062)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.LightPink;
+                            }
+                            else
+                            if (keyValue.Value <= 0.0062 && keyValue.Value > 0.0060)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.DarkGreen;
+                            }
+                            else
+                            if (keyValue.Value <= 0.0080)
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.Purple;
+                            }
+                            else
+                            {
+                                dataGridView1.Rows[i].Cells[j].Style.BackColor = Color.GreenYellow;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (int k = 0; k < y.Count; k++)
+            {
+                dataGridView1.Columns[k].Name = y[k].ToString();
+                dataGridView1.Columns[k].Width = 30;
+            }
+
+            for (int k = 0; k < x.Count; k++)
+            {
+                dataGridView1.Rows[k].HeaderCell.Value = x[k].ToString();
+            }
+        }
+    }
+}
