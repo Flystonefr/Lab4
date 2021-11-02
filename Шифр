@@ -1,0 +1,50 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+namespace Afine
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string alpha = "абвгдеєжзиіїйклмнопрстуфхцчшщьюя ";
+            char[] alphabet = alpha.ToCharArray();
+           
+            Dictionary<char, int> dicti = new Dictionary<char, int>();
+            for( int i =0; i <33; i++)
+            {
+                dicti.Add(alphabet[i], i);
+            }
+            string data = File.ReadAllText(@"1.txt");
+            string[] words = data.Split(' ');
+            string newdata = string.Join("", words);
+            char[] sym = newdata.ToCharArray();
+            int[] textnumbers = new int[sym.Length];
+            char[] ciphertext = new char[sym.Length];
+            for(int i =0; i<sym.Length; i++)
+            {
+                foreach(KeyValuePair<char, int> s in dicti)
+                {
+                    if (s.Key == sym[i])
+                        textnumbers[i] = s.Value;
+                }
+            }
+            for(int i =0; i < textnumbers.Length; i++)
+            {
+                textnumbers[i] = (1 * textnumbers[i] + 2) % 33;
+            }
+            for ( int i = 0; i<textnumbers.Length; i++)
+            {
+                foreach(KeyValuePair<char, int> s in dicti)
+                {
+                    if (s.Value == textnumbers[i])
+                        ciphertext[i] = s.Key;
+                }
+            }
+            foreach(char i in ciphertext)
+            {
+                Console.Write(i);
+            }
+        }
+    }
+}
