@@ -1,0 +1,159 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+namespace Laba1CS
+{
+    class Program
+    {
+      static   long size1; // size of first file 
+      static   long size2; // size of second file
+      static   long size3; // size of thirth file
+      static Dictionary<char, int> Словарь = new Dictionary<char, int>();
+      static double nei;
+        static double H = 0;
+        static double info = 0;
+
+     
+
+        static void Main(string[] args)
+        {
+
+            Files();
+          
+            #region Symbols
+           // Symbols(@"text1.txt");
+            Console.WriteLine("----------------------------------------------------");
+          //  Symbols(@"text2.txt");
+          Console.WriteLine("----------------------------------------------------");
+          Symbols(@"text3.txt");
+           Console.WriteLine("----------------------------------------------------");
+            
+            #endregion 
+            Console.ReadKey();
+        }
+        static void Files()
+        {
+            FileInfo file1 = new FileInfo("text1.txt");
+            size1 = file1.Length;
+            FileInfo file2 = new FileInfo("text2.txt");
+            size2 = file2.Length;
+            FileInfo file3 = new FileInfo("text3.txt");
+            size3 = file3.Length;
+             Console.Write(size1 + " bytes \t " + size2 + " bytes \t " + size3 + " bytes \n ");           
+        }
+
+       
+
+        static void Symbols(string path)
+        {
+            #region Total
+            double total = 0;
+            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.UTF8))
+            {
+
+                while (sr.Peek() != -1)
+                {
+                    char c = (char)sr.Read();               
+                    total++;
+                }
+                
+            }
+
+            #endregion
+            #region Dicti
+
+            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.UTF8))
+            {
+
+                Console.WriteLine("Символ    -    Кiлькiсть");
+                while (sr.Peek() != -1)
+                {
+
+                    char c = (char)sr.Read();
+                    if (c == 'і') c = 'i';
+
+                    int Quantity = 0;
+
+                    if (c == '.' || c == ':' || c == ',' || c == '?' || c == '(' || c == ')' || c == '!' || c == '-' || c == '`' || c == '\r' || c == '\n') { }
+                    else
+                    {
+                        if (!Словарь.ContainsKey(c))
+                        {
+                            Quantity = 1;
+                            Словарь.Add(c, Quantity);
+                        }
+
+                        else
+                        {
+                            Quantity = Словарь[c] + 1;
+                            Словарь.Remove(c);
+                            Словарь.Add(c, Quantity);
+                        }
+                    }
+                }
+
+                #endregion
+                #region Output
+
+               
+                foreach (var item in Словарь)
+                {
+                    nei = (Convert.ToDouble(item.Value) / total);
+                    H += (nei * Math.Log2(nei));
+
+                    
+                    if (item.Key == ' ')
+                    {
+                        Console.WriteLine("{0}  -  {1}", "Space", item.Value);
+                        Console.WriteLine("{0:G4}  -  iмовiрнiсть", nei);
+                    }
+                  
+
+                                if (item.Key == '\t')
+                                {
+                                    Console.WriteLine("{0}  -  {1}", "tab", item.Value);
+                                    Console.WriteLine("{0:G4}  -  iмовiрнiсть", nei);
+                                }
+                                else
+                                {
+                                    if (item.Key == 'І')
+                                    {
+                                        Console.WriteLine("{0}  -  {1}", "I", item.Value);
+                                        Console.WriteLine("{0:G4}  -  iмовiрнiсть", nei);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("{0}  -  {1}", item.Key, item.Value);
+                                        Console.WriteLine("{0:G4}  -  iмовiрнiсть", nei);
+                                    }
+                                }
+
+                            
+                        
+                    }
+                    Console.WriteLine("");
+                }
+                H = -1 * H;
+                Console.Write("Entropy of {0} \t", path);
+                Console.WriteLine(H);
+
+                info = H * total;
+                info /= 8;
+                Console.Write("info in bites \t");
+                Console.WriteLine(info);
+                #endregion
+                nei = 0;
+                Словарь.Clear();
+                H = 0;
+               
+
+            }
+
+        }
+
+    }
+
+
