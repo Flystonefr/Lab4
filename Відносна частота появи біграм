@@ -1,0 +1,147 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+namespace CyberBigrams
+{
+    class Program
+    {
+        static long size1; // size of first file 
+        static long size2; // size of second file
+        static long size3; // size of thirth file
+        static Dictionary<string, int> Словарь = new Dictionary<string, int>();
+        static double nei;
+        static double H = 0;
+        static double info = 0;
+
+
+
+        static void Main(string[] args)
+        {
+
+            Files();
+
+            #region Symbols
+      //       Symbols(@"text1.txt");
+            Console.WriteLine("----------------------------------------------------");
+            //  Symbols(@"text2.txt");
+            Console.WriteLine("----------------------------------------------------");
+            Symbols(@"text3.txt");
+            Console.WriteLine("----------------------------------------------------");
+
+            #endregion
+            Console.ReadKey();
+        }
+        static void Files()
+        {
+            FileInfo file1 = new FileInfo("text1.txt");
+            size1 = file1.Length;
+            FileInfo file2 = new FileInfo("text2.txt");
+            size2 = file2.Length;
+            FileInfo file3 = new FileInfo("text3.txt");
+            size3 = file3.Length;
+            Console.Write(size1 + " bytes \t " + size2 + " bytes \t " + size3 + " bytes \n ");
+        }
+
+
+
+        static void Symbols(string path)
+        {
+            #region Total
+            double total = 0;
+            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.UTF8))
+            {
+
+                while (sr.Peek() != -1)
+                {
+                    char c = (char)sr.Read();
+                    total++;
+                }
+
+            }
+
+            #endregion
+            #region Dicti
+
+            using (StreamReader sr = new StreamReader(path, System.Text.Encoding.UTF8))
+            {
+
+                string text = File.ReadAllText(path);
+                char[] alltext = text.ToCharArray();
+                int counter = 0;
+                string bi = "";
+                while (counter < alltext.Length - 1)
+                {
+                    if (alltext[counter] == 'і') alltext[counter] = 'i';
+                    int Quantity = 0;
+
+
+                    bi = string.Concat(alltext[counter], alltext[counter + 1]);
+                    if (Char.IsLetter(alltext[counter]) && Char.IsLetter(alltext[counter + 1]))
+                    {
+                        if (!Словарь.ContainsKey(bi))
+                        {
+                            Quantity = 1;
+                            Словарь.Add(bi, Quantity);
+                        }
+
+                        else
+                        {
+                            Quantity = Словарь[bi] + 1;
+                            Словарь.Remove(bi);
+                            Словарь.Add(bi, Quantity);
+                        }
+                    }
+                    counter++;
+                }
+
+                #endregion
+                #region Output
+
+
+                foreach (var item in Словарь)
+                {
+                    nei = (Convert.ToDouble(item.Value) / total);
+                    H += (nei * Math.Log2(nei));
+
+
+
+                 //     Console.WriteLine("{0}", item.Key);
+                    Console.WriteLine("{0:G4}", nei);
+                }
+
+
+
+
+
+                Console.WriteLine("");
+            }
+            H = -1 * H;
+            Console.Write("Entropy of {0} \t", path);
+            Console.WriteLine(H);
+
+            info = H * total;
+            info /= 8;
+            Console.Write("info in bites \t");
+            Console.WriteLine(info);
+            #endregion
+         
+           
+            using (StreamWriter file = new StreamWriter("bigramDictionary.txt"))
+                foreach (var entry in Словарь)
+                {
+                    file.Write("{0} {1} ", entry.Key, Convert.ToDouble(entry.Value)/total);
+                }
+        }
+
+           
+        
+        }
+
+    }
+
+
+
+
